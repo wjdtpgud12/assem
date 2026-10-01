@@ -65,3 +65,8 @@ main proc
 
 main endp
 end main
+
+
+플래그 
+The Carry, Zero, Sign, Overflow, Auxiliary Carry, and Parity flags are changed according to
+the value that is placed in the destination operand
