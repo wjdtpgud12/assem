@@ -7,4 +7,10 @@ Example1 PROC
 Example1 ENDP
 
 
-add esp, 8
+Example1 PROC
+push 6
+push 5
+call AddTwo
+add esp, 8 ; 2개 * 4바이트 스택 정리
+ret
+Example1 END
