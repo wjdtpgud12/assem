@@ -1,7 +1,0 @@
-.code
-main PROC
-    mov eax, 10
-    add eax, 20
-    ret
-main ENDP
-END main
