@@ -1,1 +1,133 @@
 
+1. Here is a calling sequence for a procedure named AddThree that adds three doublewords
+(assume that the STDCALL calling convention is used):
+push 10h
+push 20h
+push 30h
+call AddThree
+Draw a picture of the procedure’s stack frame immediately after EBP has been pushed on
+the runtime stack.
+
+높은 주소
+   │
+   ├── [ESP+10h]   10h       ← 첫 번째로 push한 값
+   ├── [ESP+0Ch]   20h
+   ├── [ESP+08h]   30h       ← 마지막으로 push한 값
+   ├── [ESP+04h]   반환 주소  ← call AddThree가 push
+   ├── [ESP]       이전 EBP  ← push ebp가 push
+   │
+   └── 낮은 주소
+
+2. Create a procedure named AddThree that receives three integer parameters and calculates
+and returns their sum in the EAX register.
+
+asm
+AddThree PROC STDCALL,
+    num1:DWORD,
+    num2:DWORD,
+    num3:DWORD
+
+    push ebp
+    mov  ebp,esp
+
+    mov  eax,num1
+    add  eax,num2
+    add  eax,num3
+
+    pop  ebp
+    ret  12
+AddThree ENDP
+
+3. Declare a local variable named pArray that is a pointer to an array of doublewords.
+
+LOCAL pArray:PTR DWORD
+
+4. Declare a local variable named buffer that is an array of 20 bytes.
+
+LOCAL buffer[20]:BYTE
+
+5. Declare a local variable named pwArray that points to a 16-bit unsigned integer.
+
+LOCAL pwArray:PTR WORD
+
+6. Declare a local variable named myByte that holds an 8-bit signed integer.
+
+LOCAL myByte:SBYTE
+
+7. Declare a local variable named myArray that is an array of 20 doublewords.
+
+LOCAL myArray[20]:DWORD
+
+8. Create a procedure named SetColor that receives two stack parameters: forecolor and backcolor, and calls the SetTextColor procedure from the Irvine32 library.
+
+SetColor PROC STDCALL,
+    forecolor:DWORD,
+    backcolor:DWORD
+
+    mov  eax,backcolor
+    shl  eax,4
+    or   eax,forecolor
+    call SetTextColor
+
+    ret  8
+SetColor ENDP
+
+9. Create a procedure named WriteColorChar that receives three stack parameters: char,
+forecolor, and backcolor. It displays a single character, using the color attributes specified in
+forecolor and backcolor.
+
+WriteColorChar PROC STDCALL USES eax,
+    char:DWORD,
+    forecolor:DWORD,
+    backcolor:DWORD
+
+    mov  eax,backcolor
+    shl  eax,4
+    or   eax,forecolor
+    call SetTextColor
+
+    mov  al,BYTE PTR char
+    call WriteChar
+
+    ret  12
+WriteColorChar ENDP
+
+10. Write a procedure named DumpMemory that encapsulates the DumpMem procedure in the
+Irvine32 library. Use declared parameters and the USES directive. The following is an
+example of how it should be called: INVOKE DumpMemory, OFFSET array, LENGTHOF
+array, TYPE array.
+
+DumpMemory PROC STDCALL USES esi ecx ebx,
+    pArray:PTR BYTE,
+    itemCount:DWORD,
+    itemSize:DWORD
+
+    mov  esi,pArray
+    mov  ecx,itemCount
+    mov  ebx,itemSize
+    call DumpMem
+
+    ret  12
+DumpMemory ENDP
+
+
+11. Declare a procedure named MultArray that receives two pointers to arrays of doublewords,
+and a third parameter indicating the number of array elements. Also, create a PROTO declaration for this procedure.
+
+MultArray PROTO STDCALL,
+    pArray1:PTR DWORD,
+    pArray2:PTR DWORD,
+    elementCount:DWORD
+
+MultArray PROC STDCALL,
+    pArray1:PTR DWORD,
+    pArray2:PTR DWORD,
+    elementCount:DWORD
+
+    ; 프로시저 본문
+    ret  12
+MultArray ENDP
+
+
+
+
