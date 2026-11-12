@@ -1,49 +1,68 @@
-; avg.asm
-; Windows x64 NASM: reads five integers and prints their average.
+INCLUDE Irvine32.inc
 
-default rel
-global main
-extern scanf
-extern printf
+.data
+    prompt      BYTE "정수를 입력하세요: ", 0
+    averageMsg  BYTE "평균: ", 0
 
-section .data
-    input_fmt  db "%lld %lld %lld %lld %lld", 0
-    output_fmt db "Average: %.2f", 13, 10, 0
-    five       dq 5.0
+    num1 SDWORD ?
+    num2 SDWORD ?
+    num3 SDWORD ?
+    num4 SDWORD ?
+    num5 SDWORD ?
 
-section .text
-main:
-    ; Reserve shadow space, stack arguments for scanf, and five local values.
-    ; 88 bytes also aligns RSP to 16 bytes before calls.
-    sub rsp, 88
+    five REAL8 5.0
 
-    ; scanf("%lld %lld %lld %lld %lld", &a, &b, &c, &d, &e)
-    lea rcx, [rel input_fmt]
-    lea rdx, [rsp + 48]
-    lea r8,  [rsp + 56]
-    lea r9,  [rsp + 64]
-    lea rax, [rsp + 72]
-    mov [rsp + 32], rax
-    lea rax, [rsp + 80]
-    mov [rsp + 40], rax
-    call scanf
+.code
+main PROC
+    ; 정수 5개 입력받기
+    mov edx, OFFSET prompt
+    call WriteString
+    call ReadInt
+    mov num1, eax
 
-    ; Sum the five signed 64-bit integers.
-    mov rax, [rsp + 48]
-    add rax, [rsp + 56]
-    add rax, [rsp + 64]
-    add rax, [rsp + 72]
-    add rax, [rsp + 80]
+    mov edx, OFFSET prompt
+    call WriteString
+    call ReadInt
+    mov num2, eax
 
-    ; Convert the sum to double and divide by 5.
-    cvtsi2sd xmm1, rax
-    divsd xmm1, [rel five]
+    mov edx, OFFSET prompt
+    call WriteString
+    call ReadInt
+    mov num3, eax
 
-    ; Windows x64 variadic calls pass floating arguments in both XMM and GPR.
-    lea rcx, [rel output_fmt]
-    movq rdx, xmm1
-    call printf
+    mov edx, OFFSET prompt
+    call WriteString
+    call ReadInt
+    mov num4, eax
 
-    xor eax, eax
-    add rsp, 88
-    ret
+    mov edx, OFFSET prompt
+    call WriteString
+    call ReadInt
+    mov num5, eax
+
+    ; 평균 계산: FPU에 정수들을 올려 더한 후 5로 나눔
+    fild DWORD PTR num1
+    fild DWORD PTR num2
+    faddp ST(1), ST(0)
+
+    fild DWORD PTR num3
+    faddp ST(1), ST(0)
+
+    fild DWORD PTR num4
+    faddp ST(1), ST(0)
+
+    fild DWORD PTR num5
+    faddp ST(1), ST(0)
+
+    fdiv QWORD PTR five
+
+    ; 평균 출력
+    mov edx, OFFSET averageMsg
+    call WriteString
+    call WriteFloat
+    call Crlf
+
+    exit
+main ENDP
+
+END main
